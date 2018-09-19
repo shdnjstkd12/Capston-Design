@@ -1,0 +1,106 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+/* VR 시선 이벤트 처리(3초간 쳐다보면 버튼 이벤트 발생 */
+void VR_Select(){
+
+private Cardboard MagnetButton; //VR카메라 오브젝트를 가져올 객체 변수
+private Vector3 ScreenCenter;//카메라 중앙 지점을 저장하는 변수
+public Image CursorGameImage;//커서 이미지를 저장하는 변수 -> 초기화면 버튼을 쳐다보면 커서를 돌려준다
+private float GageTimer;//커서 게이지를 3초간 1씩 증가시키기 위한 변수 0으로 초기화해준다->1초씩 값이 증가될수록 커서 게이지가 찬다.
+
+  Ray ray = Camera.main.ScrrenPointToRay(ScreenCenter);
+  //카메라 중앙 좌표에서나오는 보이지 않는 Ray(레이저를 생성) ->Ray변수에 할당한다.
+  RayCastHit hit;
+  //ray 가 충돌한 지점의 정보를 저장하는 변수->어떤 버튼과 레이저가 충돌했는지를 판단해준다.
+  CursorGameImage.fillAmout = GageTimer;
+  //커서 게이지 이미지를 GageTimer의 증가값으로 채워준다.
+  if(physics.Raycast(ray,out hit,100.0f)){//100.0f만큼 떨어진 거리만큼 ray를 쏴준다.
+ // ray와 충돌한 지점의 객체 정보 hit를 out 키워드를 이용해서 피라미터(매개변수로)보내준다.
+    if(hit.collider.CompareTag("GameStart")){//충돌한 객체의 Tag가 Game Start이면
+        GageTimer += 1.0f/3.0f * Time.deltaTime;//매 프에미마다 GageTimer을 1/3씩 증가시킨다.
+        if(GageTimer >=1 || MagnetButton.Triggered){//3초간 쳐다보거나 해당 VR 오브젝트 버튼을 클릭했을시
+           Application.LoadLevel(1);//1번 Scene를 불러온다. -> 다음 Uri로 이동.
+           GageTimer = 0;//GageTimer을 0으로 초기화해준다.
+        }
+      }
+     else if(hit.collider.CompareTag("Game_Difficulty")){//충돌한 객체의 Tag가 GameDifficulty이면
+      
+      GageTimer += 1.0f/3.0f * Time.deltaTime;//매 프에미마다 GageTimer을 1/3씩 증가시킨다.
+           if(GageTimer>=1 || MagnetButton.Triggered){//3초간 충돌지점을 쳐다보거나 해당 VR오브젝트 버튼 클릭시
+           Application.LoadLevel(1);//2번 Scene를 불러온다. -> 다음 Uri로 이동.
+           GageTimer = 0;//GageTimer을 0으로 초기화해준다.
+     }
+     
+     }
+     else if(hit.collider.CompareTag("Game_Exit")){//충돌한 객체의 Tag가 Game Exit이면
+     
+         GageTimer += 1.0f /3.0f * Time.deltaTime;//매 프레임 마다 GageTimer을 1씩 증가시킨다.
+         if(GageTimer >=1){//3초간 쳐다보았을때
+            Destroy(this);//해당 오브젝트를 삭제시켜준다.
+            GageTimer =0;//GageTimer을 0으로 다시 초기화.
+         }
+     
+     
+     }
+     else{
+     
+        GageTimer = 0; //앞에서의 충돌지점이 아닌 배경을 쳐다봤을때는 시간을 0으로 다시 초기화해준다.
+     }
+    
+    
+  
+  }
+
+
+
+}
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
